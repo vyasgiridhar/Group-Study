@@ -28,5 +28,7 @@ dependencies {
     compile 'com.android.support:design:24.2.1'
     testCompile 'junit:junit:4.12'
     compile 'me.panavtec:drawableview:0.6.0'
+    compile 'com.squareup.okhttp3:okhttp:3.4.2'
+
 
 }

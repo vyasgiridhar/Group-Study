@@ -2,17 +2,16 @@ package com.example.vyas.groupstudy;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -20,91 +19,81 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+/**
+ * Created by vyas on 11/22/16.
+ */
 
-public class LoginActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
-
-    private UserLoginTask mAuthTask = null;
-
-    // UI references.
-    private EditText mEmailView;
-    private EditText mPasswordView;
-    private View mProgressView;
-    private View mLoginFormView;
+    private EditText Email;
+    private EditText Password;
+    private EditText Name;
+    private UserRegisterTask RegTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.register_layout);
 
-        mEmailView = (EditText) findViewById(R.id.name);
-        mPasswordView = (EditText) findViewById(R.id.password);
-
-
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        Email = (EditText) findViewById(R.id.r_email);
+        Password = (EditText) findViewById(R.id.r_password);
+        Name = (EditText) findViewById(R.id.r_name);
+        Button b = (Button) findViewById(R.id.register_button);
+        b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                attemptRegister();
             }
         });
-
-        Button Register = (Button) findViewById(R.id.email_register_button);
-        Register.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getApplication(), RegisterActivity.class);
-                startActivity(i);
-            }
-        });
-
-        mProgressView = findViewById(R.id.login_progress);
     }
 
-    private void attemptLogin() {
-        if (mAuthTask != null) {
+    private void attemptRegister() {
+        if (RegTask != null) {
             return;
         }
 
         // Reset errors.
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
-
+        Email.setError(null);
+        Password.setError(null);
+        Name.setError(null);
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
-
+        String email = Email.getText().toString();
+        String password = Password.getText().toString();
+        String name = Name.getText().toString();
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
+        if (TextUtils.isEmpty(password)) {
+            Password.setError(getString(R.string.error_invalid_password));
+        } else if (TextUtils.isEmpty(name)) {
+            Name.setError("Name Required");
         }
-
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
+        else if (TextUtils.isEmpty(email)) {
+            Email.setError(getString(R.string.error_field_required));
 
         } else {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(mEmailView.getWindowToken(), 0);
-            mAuthTask = new UserLoginTask(email, password, this);
-            mAuthTask.execute((Void) null);
+            imm.hideSoftInputFromWindow(Email.getWindowToken(), 0);
+            RegTask = new UserRegisterTask(name, password, email, this);
+            RegTask.execute((Void) null);
         }
     }
 
-
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserRegisterTask extends AsyncTask<Void, Void, Boolean> {
 
         private String Name;
-        private String mPassword;
+        private String Email;
+        private String Password;
         private Context context;
         private ProgressDialog progressDialog;
 
-        UserLoginTask(String name, String password, Context context) {
+        UserRegisterTask(String name, String password, String Email, Context context) {
             Name = name;
-            this.mPassword = password;
+            this.Email = Email;
+            this.Password = password;
             this.context = context;
         }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -122,16 +111,16 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 Log.d("Here ", "OK");
                 OkHttpClient client = new OkHttpClient();
-                RequestBody body = RequestBody.create(JSON, "{\"name\":\"" + this.Name + "\",\"password\":\"" + this.mPassword + "\"}");
+                RequestBody body = RequestBody.create(JSON, "{\"name\":\"" + this.Name + "\",\"email\":\"" + this.Email + "\",\"password\":\"" + this.Password + "\"}");
                 Request request = new Request.Builder()
-                        .url("http://192.168.43.58:9090/Check")
+                        .url("http://192.168.43.58:9090/Create")
                         .post(body)
                         .build();
 
                 Response response = client.newCall(request).execute();
                 String result = response.body().string();
                 Log.d("Result : ", "doInBackground: " + result);
-                return result.contains("enter");
+                return result.contains("Created");
             } catch (Exception e) {
                 Log.d("Error", e.toString());
                 return false;
@@ -140,18 +129,13 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
             progressDialog.dismiss();
             if (success) {
-                Intent i = new Intent(context, FriendsActivity.class);
-                i.putExtra("Name", Name);
-                startActivity(i);
+                finish();
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                Toast.makeText(context, "Wrong credentials", Toast.LENGTH_LONG).show();
             }
         }
 
     }
 }
-

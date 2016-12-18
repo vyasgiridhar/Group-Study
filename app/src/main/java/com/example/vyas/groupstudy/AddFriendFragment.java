@@ -21,7 +21,7 @@ import okhttp3.Response;
  * Created by vyas on 11/22/16.
  */
 
-public class AddFriendActivity extends AppCompatActivity {
+public class AddFriendFragment extends AppCompatActivity {
     String Name2;
     String Name1;
 
@@ -36,7 +36,7 @@ public class AddFriendActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Name2 = ((EditText) findViewById(R.id.friend_name)).getText().toString();
-                new AddFriend(Name1, Name2, AddFriendActivity.this).execute();
+                new AddFriend(Name1, Name2, AddFriendFragment.this).execute();
 
             }
         });

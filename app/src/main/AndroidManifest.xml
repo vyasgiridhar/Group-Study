@@ -27,7 +27,7 @@
             android:name=".RegisterActivity"
             android:label="Register" />
         <activity
-            android:name=".AddFriendActivity"
+            android:name=".AddFriendFragment"
             android:label="Add Friend" />
         <activity android:name=".MessageViewActivity" />
         <activity android:name=".DrawingActivity" />

@@ -123,7 +123,8 @@ public class DrawingActivity extends AppCompatActivity {
         protected void onPostExecute(final Boolean success) {
             progressDialog.dismiss();
             if (success) {
-                Toast.makeText(context, "Fetched Messages", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "Sent Messages", Toast.LENGTH_LONG).show();
+                finish();
             } else {
                 Toast.makeText(context, "Network Error", Toast.LENGTH_LONG).show();
             }

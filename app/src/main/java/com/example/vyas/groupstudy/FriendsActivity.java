@@ -63,7 +63,7 @@ public class FriendsActivity extends AppCompatActivity {
         findViewById(R.id.addFriend).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(), AddFriendActivity.class);
+                Intent i = new Intent(getApplicationContext(), AddFriendFragment.class);
                 i.putExtra("Name", name);
                 startActivity(i);
             }
@@ -122,8 +122,6 @@ public class FriendsActivity extends AppCompatActivity {
             progressDialog.dismiss();
             if (success) {
                 Toast.makeText(context, "Fetched Messages", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(context, "Network Error", Toast.LENGTH_LONG).show();
             }
         }
 
